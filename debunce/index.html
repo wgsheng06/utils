@@ -8,7 +8,20 @@
 </head>
 
 <body>
+  <script>
+    let debunce = (fn, wait, options) => {
+      let time = null
 
+    }
+
+    let resizeDebunce = debunce(() => {
+      console.log(111)
+    }, 1000)
+
+    window.onclick(() => {
+      resizeDebunce()
+    })
+  </script>
 </body>
 
 </html>
