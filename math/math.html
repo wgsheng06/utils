@@ -1,49 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <script>
-      // 第一题
-      // var x = 2;
-      // var y = {
-      //   x: 3,
-      //   z: (function (x) {
-      //     this.x *= x;
-      //     x += 2;
-      //     return function (n) {
-      //       this.x *= n;
-      //       x += 3;
-      //       console.log(x);
-      //     };
-      //   })(x),
-      // };
-      // var m = y.z;
-      // m(4);
-      // y.z(5);
-      // console.log(x, y.x);
 
-      // 第二题
-      // var x = 0,
-      //   y = 1;
-      // function fn() {
-      //   x += 2;
-      //   fn = function (y) {
-      //     console.log(y + --x);
-      //   };
-      //   console.log(x, y);
-      // }
-      // fn(3);
-      // fn(4);
-      // console.log(x, y); // 2,1;5;1,1
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
 
-      // a = ? 实现 (a == 1 && a == 2 && a==3) === true
-      if (a == 1 && a == 2 && a == 3) {
-        console.log(1);
+<body>
+  <script>
+    // 第一题
+    // var x = 2;
+    // var y = {
+    //   x: 3,
+    //   z: (function (x) {
+    //     this.x *= x;
+    //     x += 2;
+    //     return function (n) {
+    //       this.x *= n;
+    //       x += 3;
+    //       console.log(x);
+    //     };
+    //   })(x),
+    // };
+    // var m = y.z;
+    // m(4);
+    // y.z(5);
+    // console.log(x, y.x);
+
+    // 第二题
+    // var x = 0,
+    //   y = 1;
+    // function fn() {
+    //   x += 2;
+    //   fn = function (y) {
+    //     console.log(y + --x);
+    //   };
+    //   console.log(x, y);
+    // }
+    // fn(3);
+    // fn(4);
+    // console.log(x, y); // 2,1;5;1,1
+
+    // a = ? 实现 (a == 1 && a == 2 && a==3) === true
+    // if (a == 1 && a == 2 && a == 3) {
+    //   console.log(1);
+    // }
+
+    let add = (...arg) => {
+      if (!arg.length) {
+        return 0
       }
-    </script>
-  </body>
+      return arg.reduce((a, b) => a + b)
+    }
+    let currying = (fn, ...arg) => {
+      return fn.apply(null, arg)
+    }
+
+    const curry = (...arg) => {
+      let nums = add.apply(null, arg)
+      let func = (...bArg) => {
+        nums = currying.apply(null, [add, nums, ...bArg])
+        return func
+      }
+      func.toString = () => {
+        // 利用toString方法来实现console.log时，输出响应的数字
+        return nums
+      }
+      return func // 无限套用闭包，所以每次返回一定是一个函数
+    }
+
+    console.log(currying(add, 1, 2, 3, 4))
+
+    let a = {
+      a: 2
+    }
+    a.toString = () => {
+      return '234'
+    }
+    // console.log(a + '123') // 234123
+
+    // console.log(curry(1, 2, 3)(2, 2, 3)(3, 11))
+
+    function trueCurrying(fn, ...args) {
+      console.log()
+      if (fn.length >= args.length) {
+        return fn(...args)
+      }
+      return function (...args2) {
+        return trueCurrying(fn, ...args, ...args2)
+      }
+    }
+    let aaa = trueCurrying(add, 1)
+    // console.log(aaa(2, 3, 4, 5)(1, 2, 3)()(1))
+  </script>
+</body>
+
 </html>

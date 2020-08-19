@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // 实现闭包累加
+    // curry(1)(2)(3) = 6
+    // let curry = function (x) {
+    //   return function (y) {
+    //     return function (z) {
+    //       return x + y + z
+    //     }
+    //   }
+    // }
+
+
+    // let add = (x, y, z) => {
+    //   return x + y + z
+    // }
+
+    let curry = (fn, ...arg) => {
+      console.log('arg', arg, arg.length)
+      console.log('fn', fn, fn.length)
+      if (arg.length >= fn.length) {
+        return fn(...arg)
+      }
+      return (...newArg) => {
+        return curry(fn, ...arg, ...newArg)
+      }
+    }
+
+    let arr = [{
+      name: 'xiaoming',
+      age: 18,
+    }, {
+      name: 'xiaohong',
+      age: 20,
+    }, {
+      name: 'xiaozhang',
+      age: 18,
+    }, {
+      name: 'xiaoli',
+      age: 50
+    }]
+
+    let hasAge = curry((age, obj) => {
+      return obj.age === age
+    });
+    let repeatAgeArr = arr.filter(hasAge(50))
+
+    console.log(repeatAgeArr)
+
+
+    let o = {
+      name: '000',
+      b: null,
+      a: function () {
+        console.log(this)
+        this.name = '111'
+        this.b = () => {
+          console.log(this)
+          this.name = '222'
+        }
+      }
+    }
+
+    console.log(o)
+    o.a()
+    console.log(o)
+    o.b()
+    console.log(o)
+    let name = 'asd'
+    o.b.call(window)
+    o.a.call(window)
+    console.log(name)
+    console.log(o)
+  </script>
+</body>
+
+</html>
