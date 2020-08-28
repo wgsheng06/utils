@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    /*
+     * 父类，Animal
+     */
+    function Animal(name) {
+      console.log(123)
+      this.name = name
+      this.sleep = function () {
+        return `${this.name} 正在睡觉。。。`
+      }
+      this.aihao = ['sleep', 'eat']
+    }
+    Animal.prototype.eat = function (food) {
+      return `${this.name} 正在吃：${food}`
+    }
+
+    /**
+     * 原型链继承
+     */
+    // function Cat() {}
+    // Cat.prototype = new Animal();
+    // Cat.prototype.name = 'cat';
+    // //　Test Code
+    // var cat = new Cat();
+    // console.log(cat.name); // "cat"
+    // console.log(cat.eat('fish')); // cat正在吃fish
+    // console.log(cat.sleep()); // cat 正在睡觉
+    // console.log(cat instanceof Animal); //true 
+    // console.log(cat instanceof Cat); //true
+
+    /**
+     * 构造函数继承
+     */
+    // function Cat(name) {
+    //   Animal.call(this) // name 可以实现向父级传递参数
+    //   this.name = name || 'Tom'
+    // }
+
+    // //　Test Code
+    // let cat = new Cat()
+    // console.log(cat.name); // "Tom"
+    // // console.log(cat.eat('fish')); // Error: cat.eat is not a function // 只能继承父类的实例属性和方法，不能继承原型属性/方法
+    // console.log(cat.sleep()); // Tom 正在睡觉
+    // console.log(cat instanceof Animal); // false // 实例并不是父类的实例，只是子类的实例
+    // console.log(cat instanceof Cat); //true
+    // console.log(cat) // {name: "Tom", sleep: ƒ} // 无法实现函数复用，每个子类都有父类实例函数的副本，影响性能
+
+    /**
+     * 三、实例继承：为父类实例添加新特性，作为子类实例返回
+     */
+    // function Cat(name) {
+    //   let instance = new Animal();
+    //   instance.name = name || "Tom";
+    //   return instance;
+    // }
+    // //　Test Code
+    // let cat = new Cat() || Cat() // 实例或函数执行方式相同
+    // console.log(cat.name); // "Tom"
+    // console.log(cat.eat('fish')); // Tom正在吃fish
+    // console.log(cat.sleep()); // Tom 正在睡觉
+    // console.log(cat instanceof Animal); // true 
+    // console.log(cat instanceof Cat); //false // 实例并不是子类的实例，是父类的实例
+    // console.log(cat) // {name: "Tom", sleep: ƒ} // 无法实现函数复用，每个子类都有父类实例函数的副本，影响性能
+
+    /**
+     * 四、拷贝继承
+     */
+    // function Cat() {
+    //   let animal = new Animal();
+    //   for (let key in animal) { // 无法获取父类不可枚举的方法
+    //     Cat.prototype[key] = animal[key] // 效率较低，内存占用高（因为要拷贝父类的属性）
+    //   }
+    //   Cat.prototype.name = name || "Tom"
+    // }
+
+    // // Test Code
+    // var cat = new Cat();
+    // console.log(cat.name); // "Tom"
+    // console.log(cat.sleep()); // Tom 正在睡觉
+    // console.log(cat instanceof Animal); // false 实例并不是父类的实例，是子类的实例
+    // console.log(cat instanceof Cat); // true
+
+    /**
+     * 五、组合继承：通过调用父类构造，继承父类的属性并保留传参的优点，然后通过将父类实例作为子类原型，实现函数复用
+     */
+    // function Cat(name) {
+    //   Animal.call(this);
+    //   this.name = name || 'Tom'
+    // }
+
+    // Cat.prototype = new Animal() // 调用了一次Animal构造函数
+    // Object.defineProperty(Cat.prototype, 'constructor', {
+    //   value: Cat,
+    //   enumerable: false, // 不可遍历
+    // })
+
+
+    // let cat = new Cat(); // 调用了二次Animal构造函数 缺陷
+    // console.log(cat.name); // "Tom"
+    // console.log(cat.sleep()); // Tom 正在睡觉
+    // console.log(cat.eat("鱼")); // Tom 正在睡觉
+    // console.log(cat instanceof Animal); // true
+    // console.log(cat instanceof Cat); // true
+    // console.log(cat); // true
+
+
+    /**
+     * 寄生组合继承
+     */
+    function Cat(name) {
+      Animal.call(this);
+      this.name = name || 'Tom'
+    }
+
+    // 为了防止2次调用Animal函数，使用第三个容器存储Animal.prototype值
+    (function () {
+      var Super = function () {}
+      Super.prototype = Animal.prototype
+      Cat.prototype = new Super()
+    }())
+    // 以上方法 === Cat.prototype = Object.create(Animal.prototype)
+
+
+    Object.defineProperty(Cat.prototype, "constructor", {
+      value: Cat,
+      enumerable: false
+    })
+
+
+    let cat = new Cat('111'); // 只调用了一次Animal构造函数
+    let cat2 = new Cat('222'); // 只调用了一次Animal构造函数
+    cat.aihao.push('run')
+    console.log(cat.name); // "Tom"
+    console.log(cat.sleep()); // Tom 正在睡觉
+    console.log(cat.eat("鱼")); // Tom 正在睡觉
+    console.log(cat instanceof Animal); // true
+    console.log(cat instanceof Cat); // true
+    console.log(cat);
+    console.log(cat2);
+  </script>
+</body>
+
+</html>
